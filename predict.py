@@ -26,22 +26,17 @@ class ModelPredictor:
     Predictor class for making predictions with packaged models.
     """
     
-    def __init__(self, model_dir: str, use_pytorch: bool = False):
+    def __init__(self, model_dir: str):
         """
         Initialize predictor.
         
         Args:
             model_dir: Path to packaged model directory
-            use_pytorch: Whether to use PyTorch model (default: XGBoost)
         """
         self.model_dir = Path(model_dir)
-        self.use_pytorch = use_pytorch
         
         # Load model
-        if use_pytorch:
-            self.model = self._load_pytorch_model()
-        else:
-            self.model = self._load_xgboost_model()
+        self.model = self._load_xgboost_model()
         
         # Load preprocessor
         self.preprocessor = self._load_preprocessor()
@@ -60,16 +55,6 @@ class ModelPredictor:
             model = pickle.load(f)
         
         logger.info("XGBoost model loaded from %s", model_path)
-        return model
-    
-    def _load_pytorch_model(self):
-        """Load PyTorch model."""
-        model_path = self.model_dir / "pytorch_model.pt"
-        
-        model = torch.jit.load(model_path)
-        model.eval()
-        
-        logger.info("PyTorch model loaded from %s", model_path)
         return model
     
     def _load_preprocessor(self):
@@ -106,22 +91,12 @@ class ModelPredictor:
         
         # Preprocess data
         X = self.preprocessor.transform(data)
-        
-        if self.use_pytorch:
-            # PyTorch prediction
-            X_tensor = torch.tensor(X.values, dtype=torch.float32)
-            
-            with torch.no_grad():
-                proba = self.model(X_tensor).numpy()
-            
-            predictions = (proba[:, 1] >= 0.5).astype(int)
-            
-        else:
-            # XGBoost prediction
-            predictions = self.model.predict(X)
-            
-            if return_proba:
-                proba = self.model.predict_proba(X)
+
+        # XGBoost prediction
+        predictions = self.model.predict(X)
+
+        if return_proba:
+            proba = self.model.predict_proba(X)
         
         # Create results dataframe
         results = pd.DataFrame({

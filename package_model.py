@@ -2,8 +2,6 @@
 Model Packaging Module for the prediction module
 """
 
-import torch
-import torch.nn as nn
 import numpy as np
 import pandas as pd
 import pickle
@@ -17,9 +15,6 @@ from typing import Dict, Any, List, Tuple
 import logging
 
 import xgboost as xgb
-
-# Suppress TorchScript tracing warnings
-warnings.filterwarnings('ignore', category=torch.jit.TracerWarning)
 
 # Set up logging
 logging.basicConfig(
@@ -181,7 +176,7 @@ class ModelPackager:
             'version': version,
             'created_at': datetime.now().isoformat(),
             'model_type': 'XGBoost Classifier',
-            'framework': 'XGBoost + PyTorch',
+            'framework': 'XGBoost',
             'n_features': len(feature_names),
             'feature_names': feature_names,
             'performance_metrics': metrics,

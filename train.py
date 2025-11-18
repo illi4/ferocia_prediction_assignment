@@ -20,8 +20,6 @@ from sklearn.metrics import (
     roc_auc_score, confusion_matrix, classification_report,
     precision_recall_curve, auc
 )
-import matplotlib.pyplot as plt
-import seaborn as sns
 
 # Set up logging
 logging.basicConfig(

@@ -3,7 +3,6 @@ pandas>=1.3.0
 numpy>=1.21.0
 scikit-learn>=1.0.0
 xgboost>=1.5.0
-torch>=1.9.0
 
 # visualisation
 matplotlib>=3.4.0
