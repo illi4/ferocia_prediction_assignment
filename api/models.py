@@ -68,7 +68,8 @@ class PredictionRequest(BaseModel):
     )
     
     class Config:
-        schema_extra = {
+        # Renamed from schema_extra in V2
+        json_schema_extra = {
             "example": {
                 "age": 30,
                 "job": "technician",
@@ -88,7 +89,7 @@ class PredictionRequest(BaseModel):
                 "poutcome": "unknown"
             }
         }
-    
+
     @validator('pdays')
     def validate_pdays(cls, v):
         """Validate pdays is either -1 or positive."""
@@ -100,25 +101,26 @@ class PredictionRequest(BaseModel):
 class PredictionResponse(BaseModel):
     """
     Response model for prediction endpoint.
-    
+
     Returns the prediction result with probability and confidence.
     """
-    
+
     prediction: Literal["yes", "no"] = Field(
         ..., description="Predicted outcome: 'yes' if likely to subscribe, 'no' otherwise"
     )
-    
+
     probability: float = Field(
         ..., ge=0.0, le=1.0,
         description="Probability of positive class (subscribing to term deposit)"
     )
-    
+
     confidence: Literal["low", "medium", "high"] = Field(
         ..., description="Confidence level of the prediction"
     )
-    
+
     class Config:
-        schema_extra = {
+        # Renamed from schema_extra in V2
+        json_schema_extra = {
             "example": {
                 "prediction": "no",
                 "probability": 0.23,
@@ -131,21 +133,25 @@ class HealthResponse(BaseModel):
     """
     Response model for health check endpoint.
     """
-    
+
     status: Literal["healthy", "unhealthy"] = Field(
         ..., description="Overall API health status"
     )
-    
+
     model_loaded: bool = Field(
         ..., description="Whether the model is loaded and ready"
     )
-    
+
     version: str = Field(
         ..., description="API version"
     )
-    
+
     class Config:
-        schema_extra = {
+        # Allow fields starting with 'model_'
+        protected_namespaces = ()
+
+        # Renamed from schema_extra in V2
+        json_schema_extra = {
             "example": {
                 "status": "healthy",
                 "model_loaded": True,
@@ -157,17 +163,18 @@ class HealthResponse(BaseModel):
 class BatchPredictionRequest(BaseModel):
     """
     Request model for batch predictions.
-    
+
     Allows multiple predictions in a single request.
     """
-    
+
     instances: list[PredictionRequest] = Field(
         ..., min_items=1, max_items=100,
         description="List of instances to predict (max 100)"
     )
-    
+
     class Config:
-        schema_extra = {
+        # Renamed from schema_extra in V2
+        json_schema_extra = {
             "example": {
                 "instances": [
                     {
@@ -197,11 +204,11 @@ class BatchPredictionResponse(BaseModel):
     """
     Response model for batch predictions.
     """
-    
+
     predictions: list[PredictionResponse] = Field(
         ..., description="List of prediction results"
     )
-    
+
     count: int = Field(
         ..., description="Number of predictions made"
     )
