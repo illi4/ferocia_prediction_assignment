@@ -1,11 +1,8 @@
 """
-Data Preprocessing Module for Bank Marketing Dataset
+Data Preprocessing Module for Marketing Dataset
 
 This module provides reusable and reproducible data preprocessing functions
-for preparing the bank marketing dataset for model training.
-
-Author: ML Engineering Team
-Date: November 2025
+to prepare the bank marketing dataset for model training.
 """
 
 import pandas as pd

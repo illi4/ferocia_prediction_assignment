@@ -1,5 +1,5 @@
 """
-Main Pipeline for Marketing prediction model
+Main Pipeline for the prediction model
 
 This script orchestrates the complete ML pipeline:
 1. Data loading

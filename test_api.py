@@ -1,13 +1,10 @@
 """
-Test script for Bank Marketing Prediction API
+Test script for Marketing Prediction API
 
 This script tests all API endpoints to ensure the API is working correctly.
 
 Usage:
     python test_api.py
-
-Author: ML Engineer
-Date: 2024-11-18
 """
 
 import requests

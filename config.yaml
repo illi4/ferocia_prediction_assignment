@@ -1,10 +1,10 @@
-# Configuration file for Bank Marketing ML Pipeline
+# Configuration file for the marketing ML Pipeline
 # This file contains all hyperparameters, thresholds, and settings for reproducible model training
 
 # General settings
 general:
   random_seed: 42
-  project_name: "bank_marketing_prediction"
+  project_name: "marketing_prediction"
   
 # Data settings
 data:
@@ -12,7 +12,7 @@ data:
   test_size: 0.2
   stratify: true
   
-# Feature engineering settings
+# Feature engineering and transformation settings
 feature_engineering:
   # Features to remove
   features_to_drop:
@@ -47,10 +47,10 @@ categorical_encoding:
   method: "label"  # Options: "label" or "onehot"
   # Keep 'unknown' as separate category for these features
   keep_unknown_features:
-    - "poutcome"  # 81.75% unknown
-    - "contact"   # 28.80% unknown
-    - "education" # 4.11% unknown
-    - "job"       # 0.64% unknown
+    - "poutcome"
+    - "contact"
+    - "education"
+    - "job"
   
   categorical_features:
     - "job"
@@ -68,7 +68,7 @@ categorical_encoding:
 model:
   algorithm: "xgboost"
   
-  # XGBoost hyperparameters
+  # XGBoost hyperparameters (subject for experimentation)
   xgboost:
     n_estimators: 100
     max_depth: 6
@@ -138,10 +138,7 @@ packaging:
   
   version_format: "v{timestamp}"
   
-  # PyTorch wrapper settings
-  pytorch_wrapper:
-    enable: false  # Disabled PyTorch
-    save_format: "torchscript"
+  # Possible future improvement: save with PyTorch wrapper
 
 # API Settings
 api:

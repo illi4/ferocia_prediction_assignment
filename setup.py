@@ -1,15 +1,12 @@
 #!/usr/bin/env python3
 """
-Setup and Validation Script for Bank Marketing ML Pipeline
+Setup and Validation Script for Marketing ML Pipeline
 
 This script helps with:
 - Environment validation
 - Dependency checking
 - Directory setup
 - Configuration validation
-
-Author: ML Engineering Team
-Date: November 2025
 """
 
 import sys

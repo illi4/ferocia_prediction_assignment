@@ -1,11 +1,5 @@
 """
-Model Packaging Module for Bank Marketing Prediction
-
-This module provides functionality to package the trained XGBoost model
-in a PyTorch-compatible format for production serving.
-
-Author: ML Engineering Team
-Date: November 2025
+Model Packaging Module for the prediction module
 """
 
 import torch
@@ -170,10 +164,6 @@ class ModelPackager:
         
         if 'model' in save_items:
             self._save_xgboost_model(model)
-            
-            # Create PyTorch wrapper if enabled
-            if self.config['packaging']['pytorch_wrapper']['enable']:
-                self._save_pytorch_wrapper(model, feature_names)
         
         if 'preprocessor' in save_items:
             self._save_preprocessor(preprocessor)
@@ -208,44 +198,6 @@ class ModelPackager:
             pickle.dump(model, f)
         
         logger.info("✓ XGBoost model saved: %s", filepath.name)
-    
-    def _save_pytorch_wrapper(
-        self,
-        model: xgb.XGBClassifier,
-        feature_names: List[str]
-    ) -> None:
-        """Save PyTorch-wrapped model."""
-        # Create wrapper
-        wrapped_model = XGBoostWrapper(model, feature_names)
-        
-        save_format = self.config['packaging']['pytorch_wrapper']['save_format']
-        
-        if save_format == 'torchscript':
-            # Create example input
-            example_input = torch.randn(1, len(feature_names))
-            
-            # Trace the model
-            traced_model = torch.jit.trace(wrapped_model, example_input)
-            
-            # Save traced model
-            filepath = self.package_dir / "pytorch_model.pt"
-            traced_model.save(filepath)
-            
-            logger.info("✓ PyTorch TorchScript model saved: %s", filepath.name)
-        
-        elif save_format == 'state_dict':
-            # Save state dict
-            filepath = self.package_dir / "pytorch_model.pth"
-            torch.save({
-                'model_state_dict': wrapped_model.state_dict(),
-                'xgboost_model': model,
-                'feature_names': feature_names
-            }, filepath)
-            
-            logger.info("✓ PyTorch state dict saved: %s", filepath.name)
-        
-        else:
-            logger.warning("Unknown PyTorch save format: %s", save_format)
     
     def _save_preprocessor(self, preprocessor: Any) -> None:
         """Save preprocessor."""

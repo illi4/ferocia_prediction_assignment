@@ -1,11 +1,7 @@
 """
-Prediction Utility for Bank Marketing Model
+Prediction Utility for the Marketing Model
 
-This script provides a simple interface for making predictions
-with a trained and packaged model.
-
-Author: ML Engineering Team
-Date: November 2025
+This script provides a simple interface for making predictions with a trained and packaged model.
 """
 
 import argparse

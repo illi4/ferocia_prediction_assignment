@@ -1,10 +1,7 @@
 """
-Model Training Module for Bank Marketing Prediction
+Model Training Module
 
 This module handles model training, evaluation, and saving using XGBoost.
-
-Author: ML Engineering Team
-Date: November 2025
 """
 
 import pandas as pd
@@ -237,13 +234,6 @@ class BankMarketingTrainer:
                          metrics['f1'], f1_threshold, f1_threshold - metrics['f1'])
             self.metrics['model_accepted'] = False
         
-        # Generate plots if configured
-        if self.config['evaluation']['show_confusion_matrix']:
-            self._plot_confusion_matrix(cm, save_results)
-        
-        if self.config['evaluation']['show_feature_importance']:
-            self._plot_feature_importance(save_results)
-        
         # Save results
         if save_results:
             self._save_evaluation_results(metrics, y_test, y_pred, y_pred_proba)
@@ -251,62 +241,7 @@ class BankMarketingTrainer:
         logger.info("=" * 80)
         
         return metrics
-    
-    def _plot_confusion_matrix(self, cm: np.ndarray, save: bool = True) -> None:
-        """Plot and optionally save confusion matrix."""
-        plt.figure(figsize=(8, 6))
-        sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', 
-                   xticklabels=['No', 'Yes'],
-                   yticklabels=['No', 'Yes'])
-        plt.title('Confusion Matrix')
-        plt.ylabel('Actual')
-        plt.xlabel('Predicted')
-        plt.tight_layout()
-        
-        if save:
-            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            filepath = self.log_dir / f"confusion_matrix_{timestamp}.png"
-            plt.savefig(filepath, dpi=300, bbox_inches='tight')
-            logger.info("Confusion matrix saved to %s", filepath)
-        
-        plt.close()
-    
-    def _plot_feature_importance(self, save: bool = True) -> None:
-        """Plot and optionally save feature importance."""
-        if self.model is None or self.feature_names is None:
-            return
-        
-        # Get feature importance
-        importance_df = pd.DataFrame({
-            'feature': self.feature_names,
-            'importance': self.model.feature_importances_
-        }).sort_values('importance', ascending=False)
-        
-        # Get top N features
-        top_n = self.config['evaluation']['top_n_features']
-        top_features = importance_df.head(top_n)
-        
-        # Plot
-        plt.figure(figsize=(10, 8))
-        plt.barh(range(len(top_features)), top_features['importance'])
-        plt.yticks(range(len(top_features)), top_features['feature'])
-        plt.xlabel('Importance')
-        plt.title(f'Top {top_n} Feature Importances')
-        plt.gca().invert_yaxis()
-        plt.tight_layout()
-        
-        if save:
-            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            filepath = self.log_dir / f"feature_importance_{timestamp}.png"
-            plt.savefig(filepath, dpi=300, bbox_inches='tight')
-            logger.info("Feature importance plot saved to %s", filepath)
-            
-            # Also save as CSV
-            csv_filepath = self.log_dir / f"feature_importance_{timestamp}.csv"
-            importance_df.to_csv(csv_filepath, index=False)
-            logger.info("Feature importance data saved to %s", csv_filepath)
-        
-        plt.close()
+
     
     def _save_evaluation_results(
         self,
