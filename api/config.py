@@ -1,5 +1,8 @@
 """ 
 This module handles API configuration settings using config.yaml.
+
+# For improvement:
+# Pass the specific model path via Environment Variables or a strict config path instead of deriving latest
 """
 
 import yaml
