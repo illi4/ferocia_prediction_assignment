@@ -8,8 +8,6 @@ making predictions.
 
 import logging
 from contextlib import asynccontextmanager
-from pathlib import Path
-from typing import Dict, Any
 
 from fastapi import FastAPI, HTTPException, status
 from fastapi.responses import JSONResponse
@@ -68,14 +66,11 @@ app = FastAPI(
     description="""
     API for predicting term deposit subscription likelihood based on bank marketing data.
     
-    ## Features
-    * **POST /predict**: Make predictions for single or batch requests
-    * **GET /health**: Check API health status
-    * Automatic input validation
-    * Comprehensive error handling
-    * Preprocessing included
-    
-    ## Input Format
+    Features:
+    POST /predict: Make predictions for single or batch requests
+    GET /health: Check API health status
+
+    Input Format:
     The API accepts raw input matching the bank marketing data format.
     All preprocessing is handled automatically.
     """,
@@ -97,7 +92,7 @@ app.add_middleware(
 async def root():
     """Root endpoint with API information."""
     return {
-        "message": "Bank Marketing Prediction API",
+        "message": "Marketing Prediction API",
         "version": "1.0.0",
         "docs": "/docs",
         "health": "/health"

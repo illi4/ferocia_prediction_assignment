@@ -360,7 +360,7 @@ def test_predict_multiple():
 def run_all_tests():
     """Run all tests and report results."""
     print("=" * 80)
-    print("BANK MARKETING API TEST SUITE")
+    print("MARKETING PREDICTION API TEST SUITE")
     print("=" * 80)
     print(f"Testing API at: {BASE_URL}")
     

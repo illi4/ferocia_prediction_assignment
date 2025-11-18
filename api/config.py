@@ -88,9 +88,6 @@ class Settings(BaseSettings):
         """Called after initialization."""
         self._load_from_yaml()
 
-    class Config:
-        env_file = ".env"
-
 
 @lru_cache()
 def get_settings() -> Settings:
