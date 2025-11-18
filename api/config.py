@@ -2,7 +2,6 @@
 This module handles API configuration settings using config.yaml.
 """
 
-import os
 import yaml
 import logging
 from pathlib import Path

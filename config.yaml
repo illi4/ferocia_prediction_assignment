@@ -1,4 +1,4 @@
-# Configuration file for the marketing ML Pipeline
+# Configuration file for the marketing ML pipeline
 # This file contains all hyperparameters, thresholds, and settings for reproducible model training
 
 # General settings
@@ -138,7 +138,7 @@ packaging:
   
   version_format: "v{timestamp}"
   
-  # Possible future improvement: save with PyTorch wrapper
+  # Possible future improvement: save with PyTorch wrapper in .pt file
 
 # API Settings
 api:

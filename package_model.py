@@ -180,9 +180,6 @@ class ModelPackager:
         # Create metadata
         self._create_metadata(version, feature_names, metrics)
         
-        # Create README
-        self._create_readme(version, metrics)
-        
         logger.info("=" * 80)
         logger.info("MODEL PACKAGING COMPLETED")
         logger.info("=" * 80)
@@ -263,120 +260,6 @@ class ModelPackager:
             json.dump(metadata, f, indent=4)
         
         logger.info("✓ Metadata saved: %s", filepath.name)
-    
-    def _create_readme(self, version: str, metrics: Dict[str, float]) -> None:
-        """Create README file for the model package."""
-        readme_content = f"""# Bank Marketing Prediction Model - {version}
-
-## Model Information
-
-**Version:** {version}  
-**Created:** {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}  
-**Algorithm:** XGBoost Classifier  
-**Framework:** XGBoost + PyTorch wrapper
-
-## Performance Metrics
-
-- **Accuracy:** {metrics.get('accuracy', 0):.4f}
-- **Precision:** {metrics.get('precision', 0):.4f}
-- **Recall:** {metrics.get('recall', 0):.4f}
-- **F1 Score:** {metrics.get('f1', 0):.4f}
-- **ROC AUC:** {metrics.get('roc_auc', 0):.4f}
-- **PR AUC:** {metrics.get('pr_auc', 0):.4f}
-
-## Model Acceptance
-
-**Status:** {'✓ ACCEPTED' if metrics.get('model_accepted', False) else '✗ REJECTED'}
-
-## Package Contents
-
-- `xgboost_model.pkl` - Native XGBoost model
-- `pytorch_model.pt` - PyTorch TorchScript wrapped model
-- `preprocessor.pkl` - Data preprocessor with fitted encoders
-- `config.yaml` - Complete configuration used for training
-- `feature_names.json` - List of features in order
-- `metrics.json` - Detailed evaluation metrics
-- `metadata.json` - Complete model metadata
-
-## Usage
-
-### Loading the Model
-
-```python
-import pickle
-import torch
-
-# Load XGBoost model
-with open('xgboost_model.pkl', 'rb') as f:
-    xgb_model = pickle.load(f)
-
-# Load PyTorch model
-pytorch_model = torch.jit.load('pytorch_model.pt')
-
-# Load preprocessor
-with open('preprocessor.pkl', 'rb') as f:
-    preprocessor = pickle.load(f)
-```
-
-### Making Predictions
-
-```python
-import pandas as pd
-import numpy as np
-
-# Prepare new data
-new_data = pd.DataFrame({{...}})  # Your raw data
-
-# Preprocess
-X_processed = preprocessor.transform(new_data)
-
-# Predict with XGBoost
-predictions_xgb = xgb_model.predict(X_processed)
-probabilities_xgb = xgb_model.predict_proba(X_processed)
-
-# Predict with PyTorch
-X_tensor = torch.tensor(X_processed.values, dtype=torch.float32)
-predictions_pytorch = pytorch_model(X_tensor)
-```
-
-## Model Details
-
-### Feature Engineering
-- Removed 'day' feature
-- Split 'pdays' into 'was_contacted_before' and 'days_since_contact'
-
-### Outlier Removal
-- Applied 3×IQR rule for: age, balance, duration, campaign
-- Removed rows with previous > 50
-- Removed rows with days_since_contact > 800
-
-### Class Imbalance Handling
-- Used scale_pos_weight parameter in XGBoost
-- Applied stratified train-test split
-
-## Deployment Notes
-
-1. **Input Format:** Model expects preprocessed features in the same order as training
-2. **Preprocessing:** Always use the provided preprocessor before making predictions
-3. **Output:** Returns probabilities for both classes [prob_no, prob_yes]
-4. **Threshold:** Default classification threshold is 0.5 (configurable)
-
-## Version History
-
-- **{version}:** Initial production model
-
-## Contact
-
-For questions or issues, contact the ML Engineering team.
-"""
-        
-        filepath = self.package_dir / "README.md"
-        
-        with open(filepath, 'w') as f:
-            f.write(readme_content)
-        
-        logger.info("✓ README created: %s", filepath.name)
-
 
 def package_for_serving(
     model: xgb.XGBClassifier,
@@ -408,7 +291,7 @@ def package_for_serving(
 
 if __name__ == "__main__":
     print("=" * 80)
-    print("Bank Marketing Model Packager")
+    print("Marketing prediction model packager")
     print("=" * 80)
     print("\nThis module provides model packaging functionality for deployment.")
     print("\nTo use:")
@@ -416,7 +299,6 @@ if __name__ == "__main__":
     print("2. Package model: package_dir = packager.package_model(model, preprocessor, feature_names, metrics)")
     print("\nThe packaged model includes:")
     print("  - XGBoost model (native format)")
-    print("  - PyTorch wrapped model (TorchScript)")
     print("  - Preprocessor with fitted encoders")
     print("  - Configuration and metadata")
     print("  - Feature names and evaluation metrics")

@@ -7,18 +7,17 @@ minutes.
 
 **Prerequisites:** Python 3.8+
 
-1.  Create a virtual environment:
+1. Create a virtual environment:
 
 ``` bash
 python -m venv venv
 source venv/bin/activate  # Windows: venv\Scripts\activate
 ```
 
-2.  Install dependencies (merged requirements for Training + API):
+2. Install dependencies (training + API):
 
 ``` bash
-pip install -r requirements.txt
-pip install -r requirements-api.txt
+pip install -r requirements.txt 
 ```
 
 ## 2. Part A: train the model (XGBoost)
