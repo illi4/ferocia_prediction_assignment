@@ -16,7 +16,7 @@ class Settings(BaseSettings):
     """
     
     # API Settings
-    APP_NAME: str = "Bank Marketing Prediction API"
+    APP_NAME: str = "Marketing Prediction API"
     VERSION: str = "1.0.0"
     HOST: str = "0.0.0.0"
     PORT: int = 8000

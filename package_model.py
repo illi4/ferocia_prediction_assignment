@@ -28,68 +28,6 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-
-class XGBoostWrapper(nn.Module):
-    """
-    PyTorch wrapper for XGBoost model.
-    
-    This wrapper allows XGBoost models to be used within PyTorch's
-    ecosystem, enabling deployment with PyTorch serving frameworks.
-    """
-    
-    def __init__(self, xgboost_model: xgb.XGBClassifier, feature_names: List[str]):
-        """
-        Initialize the wrapper.
-        
-        Args:
-            xgboost_model: Trained XGBoost classifier
-            feature_names: List of feature names in order
-        """
-        super(XGBoostWrapper, self).__init__()
-        self.xgboost_model = xgboost_model
-        self.feature_names = feature_names
-        self.n_features = len(feature_names)
-        
-        logger.info("XGBoost wrapper initialized with %d features", self.n_features)
-    
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        """
-        Forward pass through the model.
-        
-        Args:
-            x: Input tensor of shape (batch_size, n_features)
-            
-        Returns:
-            Output tensor of shape (batch_size, 2) with class probabilities
-        """
-        # Convert tensor to numpy
-        x_np = x.cpu().numpy()
-        
-        # Get predictions from XGBoost
-        proba = self.xgboost_model.predict_proba(x_np)
-        
-        # Convert back to tensor
-        output = torch.from_numpy(proba).float()
-        
-        return output
-    
-    def predict(self, x: torch.Tensor, threshold: float = 0.5) -> Tuple[torch.Tensor, torch.Tensor]:
-        """
-        Make predictions with optional threshold.
-        
-        Args:
-            x: Input tensor
-            threshold: Classification threshold
-            
-        Returns:
-            Tuple of (class_predictions, probabilities)
-        """
-        proba = self.forward(x)
-        pred_class = (proba[:, 1] >= threshold).long()
-        
-        return pred_class, proba
-
-
 class ModelPackager:
     """
     Package trained model and artifacts for production deployment.
