@@ -158,7 +158,7 @@ def run_pipeline(
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Bank Marketing Prediction ML Pipeline")
+    parser = argparse.ArgumentParser(description="Marketing Prediction ML Pipeline")
     parser.add_argument('--data', type=str, required=True, help='Path to raw data CSV')
     parser.add_argument('--config', type=str, default='config.yaml', help='Config file path')
     parser.add_argument('--skip-packaging', action='store_true', help='Skip model packaging')
