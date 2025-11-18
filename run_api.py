@@ -1,146 +1,47 @@
 """
-Startup script for Bank Marketing Prediction API
-
-This script starts the FastAPI server with appropriate settings.
-
-Usage:
-    python run_api.py [--port PORT] [--host HOST] [--reload]
-
-Author: ML Engineer
-Date: 2024-11-18
+Startup script for Marketing Prediction API
 """
 
 import argparse
 import sys
-import os
+import uvicorn
 from pathlib import Path
+from api.config import get_settings
 
-
-def check_requirements():
-    """Check if model files exist."""
-    required_files = [
-        "model.pkl",
-        "preprocessor.pkl"
-    ]
+def check_api_ready():
+    """Check if settings resolve to valid files."""
+    settings = get_settings()
     
-    missing = []
-    for file in required_files:
-        if not Path(file).exists():
-            missing.append(file)
+    print("Configuration Check:")
+    print(f"  Config File: {settings.CONFIG_PATH}")
+    print(f"  Resolved Model Path: {settings.MODEL_PATH}")
+    print(f"  Resolved Preprocessor Path: {settings.PREPROCESSOR_PATH}")
     
-    if missing:
-        print("✗ Missing required files:")
-        for file in missing:
-            print(f"  - {file}")
-        print("\nPlease ensure model.pkl and preprocessor.pkl exist in the project root.")
-        print("These files should be generated from Part A of the assignment.")
+    if not settings.MODEL_PATH or not Path(settings.MODEL_PATH).exists():
+        print("\n✗ Error: Model file not found.")
+        print("  Please run 'python pipeline.py --data ...' to generate a model")
+        print("  or check config.yaml 'api' and 'packaging' sections.")
         return False
-    
-    print("✓ All required files found")
+        
+    if not settings.PREPROCESSOR_PATH or not Path(settings.PREPROCESSOR_PATH).exists():
+        print("\n✗ Error: Preprocessor file not found.")
+        return False
+        
+    print("\n✓ Model artifacts found")
     return True
-
-
-def check_api_package():
-    """Check if api package exists."""
-    if not Path("api").exists():
-        print("✗ 'api' package not found")
-        print("Please ensure the api directory with all modules exists.")
-        return False
-    
-    required_modules = [
-        "api/__init__.py",
-        "api/main.py",
-        "api/models.py",
-        "api/predictor.py",
-        "api/config.py"
-    ]
-    
-    missing = []
-    for module in required_modules:
-        if not Path(module).exists():
-            missing.append(module)
-    
-    if missing:
-        print("✗ Missing API modules:")
-        for module in missing:
-            print(f"  - {module}")
-        return False
-    
-    print("✓ API package found")
-    return True
-
 
 def main():
-    parser = argparse.ArgumentParser(
-        description="Start the Bank Marketing Prediction API"
-    )
-    parser.add_argument(
-        "--host",
-        type=str,
-        default="0.0.0.0",
-        help="Host to bind to (default: 0.0.0.0)"
-    )
-    parser.add_argument(
-        "--port",
-        type=int,
-        default=8000,
-        help="Port to bind to (default: 8000)"
-    )
-    parser.add_argument(
-        "--reload",
-        action="store_true",
-        help="Enable auto-reload on code changes (for development)"
-    )
-    
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--host", default="0.0.0.0")
+    parser.add_argument("--port", type=int, default=8000)
+    parser.add_argument("--reload", action="store_true")
     args = parser.parse_args()
     
-    print("=" * 80)
-    print("BANK MARKETING PREDICTION API - STARTUP")
-    print("=" * 80)
-    
-    # Check requirements
-    print("\nChecking requirements...")
-    if not check_requirements():
+    if not check_api_ready():
         sys.exit(1)
-    
-    if not check_api_package():
-        sys.exit(1)
-    
-    print("\n✓ All checks passed")
-    print("\nStarting API server...")
-    print(f"  Host: {args.host}")
-    print(f"  Port: {args.port}")
-    print(f"  Reload: {args.reload}")
-    print("\nAPI will be available at:")
-    print(f"  - http://localhost:{args.port}")
-    print(f"  - http://localhost:{args.port}/docs (Swagger UI)")
-    print(f"  - http://localhost:{args.port}/redoc (ReDoc)")
-    print("\nPress CTRL+C to stop the server")
-    print("=" * 80)
-    print()
-    
-    # Import and run uvicorn
-    try:
-        import uvicorn
         
-        uvicorn.run(
-            "api.main:app",
-            host=args.host,
-            port=args.port,
-            reload=args.reload,
-            log_level="info"
-        )
-    except ImportError:
-        print("✗ uvicorn not installed")
-        print("Please install requirements: pip install -r requirements-api.txt")
-        sys.exit(1)
-    except KeyboardInterrupt:
-        print("\n\nShutting down gracefully...")
-        sys.exit(0)
-    except Exception as e:
-        print(f"\n✗ Error starting server: {e}")
-        sys.exit(1)
-
+    print(f"\nStarting API on http://{args.host}:{args.port}")
+    uvicorn.run("api.main:app", host=args.host, port=args.port, reload=args.reload)
 
 if __name__ == "__main__":
     main()

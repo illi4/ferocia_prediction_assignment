@@ -90,39 +90,28 @@ model:
     n_jobs: -1
     verbosity: 1
   
-  # Training-specific settings (not constructor parameters)
+  # Training-specific settings
   training:
-    early_stopping_rounds: 10  # Moved here from xgboost params
+    early_stopping_rounds: 10
 
 # Training settings
 training:
-  validation_split: 0.2  # From training set
-  cv_folds: 5  # For cross-validation (if needed)
+  validation_split: 0.2
+  cv_folds: 5
 
 # Evaluation settings
 evaluation:
-  # Primary metric
   primary_metric: "f1"
-  
-  # F1 score threshold for model acceptance
-  f1_threshold: 0.40  # Minimum F1 score to consider model acceptable
-  
-  # Additional metrics to track
+  f1_threshold: 0.40
   metrics:
     - "accuracy"
     - "precision"
     - "recall"
     - "f1"
     - "roc_auc"
-    - "pr_auc"  # Precision-Recall AUC
-  
-  # Classification threshold for predictions
+    - "pr_auc"
   classification_threshold: 0.5
-  
-  # Generate confusion matrix
   show_confusion_matrix: true
-  
-  # Feature importance
   show_feature_importance: true
   top_n_features: 15
 
@@ -131,8 +120,6 @@ logging:
   log_dir: "logs"
   log_level: "INFO"
   log_format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-  
-  # Experiment tracking
   save_metrics: true
   save_predictions: true
   save_feature_importance: true
@@ -140,33 +127,23 @@ logging:
 # Model packaging settings
 packaging:
   model_dir: "models"
-  model_name: "bank_marketing_model"
+  model_name: "marketing_model"  # Changed from bank_marketing_model
   
-  # Files to save
   save_items:
-    - "model"           # The trained model
-    - "preprocessor"    # Preprocessing artifacts (encoders, etc.)
-    - "config"          # This config file
-    - "feature_names"   # List of feature names
-    - "metrics"         # Evaluation metrics
+    - "model"
+    - "preprocessor"
+    - "config"
+    - "feature_names"
+    - "metrics"
   
-  # Versioning
-  version_format: "v{timestamp}"  # e.g., v20241118_143022
+  version_format: "v{timestamp}"
   
   # PyTorch wrapper settings
   pytorch_wrapper:
-    enable: false  # Set to false to skip PyTorch wrapper (avoids tracing warnings)
-    save_format: "torchscript"  # Options: "torchscript" or "state_dict"
+    enable: false  # Disabled PyTorch
+    save_format: "torchscript"
 
-# Notes for future improvements
-future_improvements:
-  - "Hyperparameter tuning using GridSearchCV or Optuna"
-  - "Feature selection using SHAP values or recursive feature elimination"
-  - "Try ensemble methods (stacking, voting)"
-  - "Implement SMOTE or other resampling techniques"
-  - "Add more sophisticated feature engineering (interactions, polynomials)"
-  - "Experiment with other algorithms (LightGBM, CatBoost)"
-  - "Implement online learning for model updates"
-  - "Add data drift detection"
-  - "Create A/B testing framework"
-  - "Add model interpretability dashboard"
+# API Settings
+api:
+  model_name: "marketing_model"
+  model_version: "latest"  # Set to specific version string (e.g. "v2025...") or "latest"

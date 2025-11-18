@@ -1,5 +1,5 @@
 """
-Main Pipeline for Bank Marketing Prediction Model
+Main Pipeline for Marketing prediction model
 
 This script orchestrates the complete ML pipeline:
 1. Data loading
@@ -7,13 +7,11 @@ This script orchestrates the complete ML pipeline:
 3. Model training
 4. Model evaluation
 5. Model packaging
-
-Author: ML Engineering Team
-Date: November 2025
 """
 
 import argparse
 import sys
+import shutil
 from pathlib import Path
 import logging
 
@@ -36,17 +34,17 @@ def run_pipeline(
 ) -> None:
     """
     Run the complete ML pipeline.
-    
-    Args:
-        data_path: Path to the raw data CSV file
-        config_path: Path to configuration file
-        skip_packaging: If True, skip model packaging step
     """
     logger.info("=" * 80)
     logger.info("BANK MARKETING PREDICTION - ML PIPELINE")
     logger.info("=" * 80)
     
+    temp_dir = Path("temp_artifacts")
+    
     try:
+        # Create temp directory for intermediate artifacts
+        temp_dir.mkdir(exist_ok=True)
+        
         # ============================================================================
         # STEP 1: Data Loading
         # ============================================================================
@@ -56,8 +54,6 @@ def run_pipeline(
         
         df = load_data(data_path)
         logger.info("✓ Data loaded successfully")
-        logger.info("  Shape: %s", df.shape)
-        logger.info("  Columns: %s", list(df.columns))
         
         # ============================================================================
         # STEP 2: Data Preprocessing
@@ -70,13 +66,11 @@ def run_pipeline(
         X_train, X_test, y_train, y_test = preprocessor.fit_transform(df)
         
         logger.info("✓ Preprocessing completed")
-        logger.info("  Training set: %s", X_train.shape)
-        logger.info("  Test set: %s", X_test.shape)
-        logger.info("  Features: %d", len(preprocessor.feature_names))
         
-        # Save preprocessor
-        preprocessor.save("preprocessor.pkl")
-        logger.info("✓ Preprocessor saved to preprocessor.pkl")
+        # Save preprocessor to temp
+        preprocessor_path = temp_dir / "preprocessor.pkl"
+        preprocessor.save(str(preprocessor_path))
+        logger.info("✓ Preprocessor saved to temp location")
         
         # ============================================================================
         # STEP 3: Model Training
@@ -90,9 +84,10 @@ def run_pipeline(
         
         logger.info("✓ Model training completed")
         
-        # Save model
-        trainer.save_model("model.pkl")
-        logger.info("✓ Model saved to model.pkl")
+        # Save model to temp
+        model_path = temp_dir / "xgboost_model.pkl"
+        trainer.save_model(str(model_path))
+        logger.info("✓ Model saved to temp location")
         
         # ============================================================================
         # STEP 4: Model Evaluation
@@ -104,11 +99,6 @@ def run_pipeline(
         metrics = trainer.evaluate(X_test, y_test, save_results=True)
         
         logger.info("✓ Model evaluation completed")
-        logger.info("\nFinal Metrics Summary:")
-        logger.info("-" * 40)
-        for metric_name, value in metrics.items():
-            if metric_name != 'model_accepted':
-                logger.info("  %s: %.4f", metric_name.upper(), value)
         
         # ============================================================================
         # STEP 5: Model Packaging
@@ -128,6 +118,8 @@ def run_pipeline(
             
             logger.info("✓ Model packaging completed")
             logger.info("  Package location: %s", package_dir)
+        else:
+            package_dir = "Skipped"
         
         # ============================================================================
         # Pipeline Summary
@@ -135,19 +127,13 @@ def run_pipeline(
         logger.info("\n" + "=" * 80)
         logger.info("PIPELINE EXECUTION SUMMARY")
         logger.info("=" * 80)
-        logger.info("✓ All steps completed successfully!")
-        logger.info("\nResults:")
-        logger.info("  1. Preprocessor: preprocessor.pkl")
-        logger.info("  2. Model: model.pkl")
-        logger.info("  3. Logs: logs/")
-        if not skip_packaging:
-            logger.info("  4. Package: %s", package_dir)
         
-        logger.info("\nModel Performance:")
-        logger.info("  F1 Score: %.4f", metrics['f1'])
-        logger.info("  ROC AUC: %.4f", metrics['roc_auc'])
-        logger.info("  Status: %s", 
-                   "ACCEPTED ✓" if metrics.get('model_accepted', False) else "NEEDS IMPROVEMENT ⚠")
+        if not skip_packaging:
+            logger.info(f"✓ Model Version: {package_dir.name if hasattr(package_dir, 'name') else package_dir}")
+            logger.info(f"✓ Artifacts Location: {package_dir}")
+        
+        logger.info(f"✓ F1 Score: {metrics['f1']:.4f}")
+        logger.info(f"✓ Status: {'ACCEPTED' if metrics.get('model_accepted') else 'NEEDS IMPROVEMENT'}")
         
         logger.info("\n" + "=" * 80)
         logger.info("PIPELINE COMPLETED SUCCESSFULLY")
@@ -160,64 +146,34 @@ def run_pipeline(
         logger.error("Error: %s", str(e))
         logger.exception("Full traceback:")
         sys.exit(1)
+    finally:
+        # Cleanup temp directory
+        if temp_dir.exists():
+            logger.info("Cleaning up temporary artifacts...")
+            try:
+                shutil.rmtree(temp_dir)
+                logger.info("✓ Temp cleanup complete")
+            except Exception as e:
+                logger.warning(f"Failed to cleanup temp directory: {e}")
 
 
 def main():
-    """Main entry point for the pipeline."""
-    parser = argparse.ArgumentParser(
-        description="Bank Marketing Prediction ML Pipeline",
-        formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog="""
-Examples:
-  # Run full pipeline
-  python pipeline.py --data path/to/data.csv
-  
-  # Run without packaging
-  python pipeline.py --data path/to/data.csv --skip-packaging
-  
-  # Use custom config
-  python pipeline.py --data path/to/data.csv --config custom_config.yaml
-        """
-    )
-    
-    parser.add_argument(
-        '--data',
-        type=str,
-        required=True,
-        help='Path to the raw data CSV file'
-    )
-    
-    parser.add_argument(
-        '--config',
-        type=str,
-        default='config.yaml',
-        help='Path to configuration YAML file (default: config.yaml)'
-    )
-    
-    parser.add_argument(
-        '--skip-packaging',
-        action='store_true',
-        help='Skip model packaging step'
-    )
+    parser = argparse.ArgumentParser(description="Bank Marketing Prediction ML Pipeline")
+    parser.add_argument('--data', type=str, required=True, help='Path to raw data CSV')
+    parser.add_argument('--config', type=str, default='config.yaml', help='Config file path')
+    parser.add_argument('--skip-packaging', action='store_true', help='Skip model packaging')
     
     args = parser.parse_args()
     
-    # Validate data file exists
     if not Path(args.data).exists():
-        logger.error("Data file not found: %s", args.data)
+        logger.error(f"Data file not found: {args.data}")
         sys.exit(1)
     
-    # Validate config file exists
     if not Path(args.config).exists():
-        logger.error("Config file not found: %s", args.config)
+        logger.error(f"Config file not found: {args.config}")
         sys.exit(1)
     
-    # Run pipeline
-    run_pipeline(
-        data_path=args.data,
-        config_path=args.config,
-        skip_packaging=args.skip_packaging
-    )
+    run_pipeline(args.data, args.config, args.skip_packaging)
 
 
 if __name__ == "__main__":
