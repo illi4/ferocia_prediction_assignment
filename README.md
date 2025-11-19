@@ -8,6 +8,10 @@ The system is divided into two modular components:
 1. **Model Pipeline (Part A):** Handles data cleaning, training, and artifact generation. 
 2. **Serving API (Part B):** A FastAPI service that hosts the trained model and handles real-time preprocessing.
 
+Answers to Additional questions are located in the files 
+[ADDITIONAL_Q_A.md (Part A)](ADDITIONAL_Q_A.md)
+[ADDITIONAL_Q_B.md (Part B)](ADDITIONAL_Q_B.md)
+
 ### Workflow
 
 1.  **Raw data** -\> `pipeline.py`
