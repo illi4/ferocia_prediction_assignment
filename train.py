@@ -31,7 +31,7 @@ logger = logging.getLogger(__name__)
 
 class BankMarketingTrainer:
     """
-    Trainer for Bank Marketing prediction model.
+    Trainer for the prediction model.
     
     This class handles:
     - Model training with XGBoost
@@ -52,7 +52,7 @@ class BankMarketingTrainer:
         self.feature_names = None
         self.metrics = {}
         
-        # Set random seed
+        # Set random seed for reproducability
         np.random.seed(self.config['general']['random_seed'])
         
         # Set up logging directory

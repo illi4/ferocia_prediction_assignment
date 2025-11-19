@@ -43,8 +43,7 @@ The API is built with **FastAPI** to provide a lightweight and high-performance 
 
 ## Project Structure
 
--   `config.yaml`: Master configuration for Training & API
--   `validate_env.py`: Environment validation
+-   `config.yaml`: Master configuration for Training & API 
 -   `pipeline.py`: Orchestrator for Model Training
 -   `preprocessing.py`: Reusable data cleaning logic
 -   `train.py`: XGBoost training logic
