@@ -1,8 +1,5 @@
 """
-Data Preprocessing Module for Marketing Dataset
-
-This module provides reusable and reproducible data preprocessing functions
-to prepare the bank marketing dataset for model training.
+Data Preprocessing Module for the Marketing Dataset
 """
 
 import pandas as pd

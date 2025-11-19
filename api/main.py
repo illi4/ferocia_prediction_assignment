@@ -1,9 +1,8 @@
 """
 Main application
 
-This FastAPI application provides a /predict endpoint for the Bank Marketing model.
-It handles raw input from consumers and applies the necessary preprocessing before
-making predictions.
+This FastAPI application provides a /predict endpoint for the marketing model.
+It handles raw input from consumers and applies the necessary preprocessing before making predictions.
 """
 
 import logging
